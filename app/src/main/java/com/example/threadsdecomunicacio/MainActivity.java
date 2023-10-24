@@ -2,11 +2,17 @@ package com.example.threadsdecomunicacio;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,9 +27,9 @@ import java.util.concurrent.Executors;
 import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
-
     private Button button0;
-
+    private TextView textView0;
+    private ImageView imageView0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,35 +37,48 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         button0 = findViewById(R.id.button0);
+        textView0 = findViewById(R.id.textView0);
+        imageView0 = findViewById(R.id.imageView0);
 
-
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
 
         button0.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                getDataFromUrl("https://api.myip.com/");
-         }});
-
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
-
-                // Tasques en background (xarxa)
-
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        // Tasques a la interfície gràfica (GUI)
+                        final String data = getDataFromUrl("https://api.myip.com/");
+                        final Bitmap bitmap = downloadImage("https://pics.filmaffinity.com/stalker-998822225-mmed.jpg");
+                        // Tasques en background (xarxa)
 
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                textView0.setText(data);
+                                imageView0.setImageBitmap(bitmap);
+                            }
+                        });
                     }
                 });
-            }
-        });
+         }});
+
+
+
 
     }
+    private Bitmap downloadImage(String imageUrl) {
+        try {
+            InputStream in = new java.net.URL(imageUrl).openStream();
+            return BitmapFactory.decodeStream(in);
+        } catch (Exception e) {
+            Log.e("Error", "Error al descargar la imagen: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     String error = ""; // string field
     private String getDataFromUrl(String demoIdUrl) {
 
@@ -99,3 +118,4 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
