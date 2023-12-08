@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         final String data = getDataFromUrl("https://api.myip.com/");
-                        final Bitmap bitmap = downloadImage("https://pics.filmaffinity.com/stalker-998822225-mmed.jpg");
+                        //final Bitmap bitmap = downloadImage("https://pics.filmaffinity.com/stalker-998822225-mmed.jpg");
+                        final Bitmap bitmap = downloadImage("https://www.todaslascriticas.com.ar/img/peliculas/afiches/interestelar.jpg");
                         // Tasques en background (xarxa)
 
                         Handler handler = new Handler(Looper.getMainLooper());
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             InputStream in = new java.net.URL(imageUrl).openStream();
             return BitmapFactory.decodeStream(in);
+
         } catch (Exception e) {
             Log.e("Error", "Error al descargar la imagen: " + e.getMessage());
             e.printStackTrace();
@@ -79,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    String error = ""; // string field
+    String error = "";
     private String getDataFromUrl(String demoIdUrl) {
 
         String result = null;
@@ -116,6 +119,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return result;
     }
-
 }
 
