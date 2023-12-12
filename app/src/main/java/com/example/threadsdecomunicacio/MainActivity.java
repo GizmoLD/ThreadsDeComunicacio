@@ -15,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,12 +38,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         button0 = findViewById(R.id.button0);
         textView0 = findViewById(R.id.textView0);
         imageView0 = findViewById(R.id.imageView0);
-
-
         button0.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -49,26 +48,26 @@ public class MainActivity extends AppCompatActivity {
                 executor.execute(new Runnable() {
                     @Override
                     public void run() {
-                        final String data = getDataFromUrl("https://api.myip.com/");
-                        //final Bitmap bitmap = downloadImage("https://pics.filmaffinity.com/stalker-998822225-mmed.jpg");
-                        final Bitmap bitmap = downloadImage("https://www.todaslascriticas.com.ar/img/peliculas/afiches/interestelar.jpg");
-                        // Tasques en background (xarxa)
-
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                textView0.setText(data);
-                                imageView0.setImageBitmap(bitmap);
-                            }
-                        });
+                        final String jsonData = getDataFromUrl("https://randomfox.ca/floof/");
+                        try{
+                            final String data = getDataFromUrl("https://api.myip.com/");
+                            JSONObject json = new JSONObject(jsonData);
+                            final String imageUrl = json.optString("image", "");
+                            final Bitmap bitmap = downloadImage(imageUrl);
+                            Handler handler = new Handler(Looper.getMainLooper());
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    textView0.setText(data);
+                                    imageView0.setImageBitmap(bitmap);
+                                }
+                            });
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
                 });
          }});
-
-
-
-
     }
     private Bitmap downloadImage(String imageUrl) {
         try {
